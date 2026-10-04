@@ -145,6 +145,27 @@ a{color:inherit;text-decoration:none}
 @media (prefers-reduced-motion:reduce){.watch-cta,.watch-cta::after{animation:none}}
 @media print{.watch-cta,.watch-cta::after{animation:none}.watch-cta::after{display:none}}
 .watch-dot{width:8px;height:8px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px #ffffff40;animation:watch-blink 1s steps(2,start) infinite}@keyframes watch-blink{to{visibility:hidden}}@media (prefers-reduced-motion:reduce){.watch-dot{animation:none}}@media print{.watch-dot{animation:none}}
+/* responsive fixes */
+.btn{white-space:nowrap}
+.devices,.device{min-width:0}
+@media(max-width:600px){
+ .nav{gap:10px;padding:0 14px;height:56px}
+ .nav .logo{font-size:20px}
+ .nav .btn{padding:8px 11px;font-size:12px}
+ .nav .btn[download]{display:none}
+ .slide{padding:28px 20px 56px!important}
+ .pageno{right:20px;bottom:18px}
+ .cover .ctas,.close .ctas{flex-wrap:wrap}
+ .cover .ctas .btn{flex:1 1 auto;justify-content:center}
+ .devices{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px}
+ .device{padding:12px 4px 10px!important;border-radius:14px}
+ .device .dicon{width:48px;height:48px;border-radius:14px}
+ .device .dicon .ico,.device .dicon img{width:30px!important;height:30px!important}
+ .device b{font-size:12.5px}
+ .device em{font-size:9px;padding:2px 6px}
+ .demo-bar span{font-size:10.5px}
+}
+@media(max-width:360px){.slide h2{font-size:28px!important}.cover h1{font-size:40px!important}}
 </style></head><body>
 
 <!-- Omni icon set: drawn on a 24px grid, 1.7px rounded strokes, soft duotone fills. Original artwork. -->
