@@ -38,7 +38,7 @@ export default function Assistant({ request, pending, onClose }) {
   }, [request]);
   return <aside className="assistant-panel" aria-label="Omni assistant">
     <div className="assistant-heading"><div className="assistant-title"><span className="tiny-logo"><Icon name="spark" size={16}/></span><b>Your sidekick</b></div><span className="demo-dot">Demo</span><button className="icon-button mobile-chat-close" onClick={onClose} aria-label="Back to dashboard"><Icon name="close"/></button></div>
-    <div className={"olivia-stage" + (busy ? " speaking" : "")}><img src="/olivia.png" alt="Olivia, your assistant"/><span className="olivia-live"><span/> LIVE</span><span className="olivia-name"><b>Olivia</b>{busy ? " · speaking…" : " · here to help"}</span></div>
+    <div className={"olivia-stage" + (busy ? " speaking" : "")}><img src="/omni.png" alt="Olivia, your assistant"/><span className="olivia-live"><span/> LIVE</span><span className="olivia-name"><b>Olivia</b>{busy ? " · speaking…" : " · here to help"}</span></div>
     <div className="companion-intro"><h2>Hey, I’m Olivia <span>✳</span></h2><p>Your life admin, handled together.</p></div>
     <div className="conversation" ref={scroller} role="log" aria-label="Chat messages" aria-live="polite">
       <div className="chat-message assistant-message"><span className="message-author">OLIVIA · PERSONAL ASSISTANT</span><p>You’ve got {pending} {pending === 1 ? "decision" : "decisions"} to review and a few things coming up. Let’s make some room for the good stuff.</p><span className="message-time">Demo conversation</span></div>

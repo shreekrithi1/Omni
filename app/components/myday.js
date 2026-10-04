@@ -38,8 +38,20 @@ export default function MyDay({ ask }) {
   const [todos, setTodos] = useState(TODOS);
   const [draft, setDraft] = useState("");
   useEffect(() => { setNow(new Date()); const t = setInterval(() => setNow(new Date()), 60000); return () => clearInterval(t); }, []);
-  useEffect(() => { try { const s = JSON.parse(localStorage.getItem("omni.todos")); if (Array.isArray(s)) setTodos(s); } catch {} }, []);
-  const save = (list) => { setTodos(list); try { localStorage.setItem("omni.todos", JSON.stringify(list)); } catch {} };
+  const [live, setLive] = useState(false);
+  useEffect(() => {
+    fetch("/api/todos").then((r) => r.json()).then((j) => {
+      if (Array.isArray(j.todos)) { setTodos(j.todos); setLive(true); return; }
+      try { const s = JSON.parse(localStorage.getItem("omni.todos")); if (Array.isArray(s)) setTodos(s); } catch {}
+    }).catch(() => {});
+  }, []);
+  const save = (list) => { setTodos(list); if (!live) try { localStorage.setItem("omni.todos", JSON.stringify(list)); } catch {} };
+  const toggle = (t) => { save(todos.map((x) => x.id === t.id ? { ...x, done: !x.done } : x)); if (live) fetch("/api/todos", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: t.id, done: !t.done }) }); };
+  const addTodo = async (text) => {
+    if (!live) return save([{ id: Date.now(), text, tag: "Inbox", done: false }, ...todos]);
+    const r = await fetch("/api/todos", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text }) }).then((r) => r.json());
+    if (r.todo) setTodos((l) => [r.todo, ...l]);
+  };
 
   const nowMin = now ? now.getHours() * 60 + now.getMinutes() : 10 * 60 + 40;
   const next = useMemo(() => CAL.find((e) => mins(e.start) > nowMin), [nowMin]);
@@ -73,12 +85,12 @@ export default function MyDay({ ask }) {
 
       <div className="md-side">
         <section className="md-card">
-          <header><div><h2>To-dos</h2><p>{open} open · tap to complete</p></div></header>
-          <form className="md-add" onSubmit={(e) => { e.preventDefault(); if (draft.trim()) save([{ id: Date.now(), text: draft.trim(), tag: "Inbox", done: false }, ...todos]); setDraft(""); }}>
+          <header><div><h2>To-dos</h2><p>{open} open · {live ? "saved to Neon" : "saved in this browser"}</p></div></header>
+          <form className="md-add" onSubmit={(e) => { e.preventDefault(); if (draft.trim()) addTodo(draft.trim()); setDraft(""); }}>
             <Icon name="plus" size={15} /><input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="Add a to-do and press Enter" />
           </form>
           <ul className="md-todos">{todos.map((t) => <li key={t.id} className={t.done ? "done" : ""}>
-            <button aria-label="toggle" onClick={() => save(todos.map((x) => x.id === t.id ? { ...x, done: !x.done } : x))}>{t.done && <Icon name="check" size={12} />}</button>
+            <button aria-label="toggle" onClick={() => toggle(t)}>{t.done && <Icon name="check" size={12} />}</button>
             <span>{t.text}</span><em>{t.tag}</em></li>)}</ul>
         </section>
 

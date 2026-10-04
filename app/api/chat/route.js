@@ -1,9 +1,27 @@
 import { NextResponse } from "next/server";
 import * as m from "@/lib/mock";
+import { getSecret, getSettings } from "@/lib/secrets";
 
 // Mock "Mastra orchestrator" — routes intent to a sub-agent and answers from mock state.
+export const dynamic = "force-dynamic";
+
+// Live mode: forward to the deployed Mastra agent (Olivia). Falls back to demo replies if not configured or unreachable.
+async function askOlivia(message) {
+  const s = getSettings(); const token = getSecret("mastra");
+  if (!s.useLive || !s.mastraUrl || !token) return null;
+  const r = await fetch(`${s.mastraUrl}/api/agents/${encodeURIComponent(s.agentId || "olivia")}/generate`, {
+    method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ messages: [{ role: "user", content: message.slice(0, 4000) }] }), signal: AbortSignal.timeout(60000),
+  });
+  if (!r.ok) throw new Error(`Olivia returned ${r.status}`);
+  const j = await r.json();
+  return { agent: s.displayName || "Olivia", reply: j.text ?? j.response?.text ?? JSON.stringify(j).slice(0, 2000), live: true };
+}
+
 export async function POST(req) {
   const { message = "" } = await req.json();
+  try { const live = await askOlivia(String(message)); if (live) return NextResponse.json(live); }
+  catch (e) { return NextResponse.json({ agent: "Olivia", reply: `I couldn't reach your live agents (${e.message}). Check Settings → Olivia.`, live: false }); }
   const q = message.toLowerCase();
   const nw = m.accounts.reduce((s, a) => s + a.balance, 0);
   let agent = "Orchestrator", reply;

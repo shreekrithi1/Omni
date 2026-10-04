@@ -1,0 +1,25 @@
+{
+  "name": "omni-agents",
+  "scripts": {
+    "dev": "mastra dev",
+    "build": "mastra build",
+    "start": "node .mastra/output/index.mjs",
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "@mastra/core": "^1.74.0",
+    "@mastra/mcp": "^2.1.2",
+    "@neondatabase/serverless": "^1.2.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.4",
+    "mastra": "^1.32.1",
+    "typescript": "^6.0.3"
+  },
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.9"
+  }
+}

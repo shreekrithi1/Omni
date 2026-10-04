@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
+import { getSecret } from "@/lib/secrets";
 
 // Personalized news via Exa (https://exa.ai). Set EXA_API_KEY in .env.local.
 export async function POST(req) {
   const { interests = [], days = 7, perTopic = 4 } = await req.json();
-  const key = process.env.EXA_API_KEY;
-  if (!key) return NextResponse.json({ error: "Missing EXA_API_KEY in .env.local" }, { status: 400 });
+  const key = getSecret("exa");
+  if (!key) return NextResponse.json({ error: "Connect Exa in Settings → Connectors" }, { status: 400 });
 
   const since = new Date(Date.now() - days * 864e5).toISOString();
   const results = await Promise.all(
