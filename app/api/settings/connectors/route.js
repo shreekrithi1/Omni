@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { CONNECTORS, byId } from "@/lib/connectors";
-import { saveSecret, deleteSecret, status } from "@/lib/secrets";
+import { saveSecret, deleteSecret, status, setPersonaId } from "@/lib/secrets";
 import { adminOnly } from "@/lib/guard";
 export const dynamic = "force-dynamic";
 
@@ -10,12 +10,15 @@ export async function GET(req) {
 }
 export async function POST(req) {
   const denied = adminOnly(req); if (denied) return denied;
-  const { id, value, url } = await req.json();
+  const { id, value, url, personaId } = await req.json();
   const c = byId(id); if (!c) return NextResponse.json({ error: "Unknown connector" }, { status: 400 });
+  const pid = typeof personaId === "string" ? personaId.trim() : undefined;
+  if (pid !== undefined && pid && !/^[A-Za-z0-9_-]{4,100}$/.test(pid)) return NextResponse.json({ error: "Persona ID looks invalid" }, { status: 400 });
+  if (!value && pid !== undefined) { if (!setPersonaId(id, pid)) return NextResponse.json({ error: "Save the API key first" }, { status: 400 }); return NextResponse.json({ ok: true, status: status(id) }); }
   const v = (value || "").trim();
   if (v.length < 8 || v.length > 4096 || /\s/.test(v)) return NextResponse.json({ error: "That doesn't look like a valid token" }, { status: 400 });
   if (url && !/^https:\/\//.test(url) && !/^http:\/\/localhost(:\d+)?/.test(url)) return NextResponse.json({ error: "URL must be https://" }, { status: 400 });
-  saveSecret(id, v, { url });
+  saveSecret(id, v, { url, personaId: pid });
   return NextResponse.json({ ok: true, status: status(id) });
 }
 export async function DELETE(req) {

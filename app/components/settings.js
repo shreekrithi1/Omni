@@ -16,11 +16,12 @@ function Connector({ c, onChange }) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
   const [url, setUrl] = useState(c.status.url || "");
+  const [pid, setPid] = useState(c.status.personaId || "");
   const [busy, setBusy] = useState("");
   const [msg, setMsg] = useState(null);
   const save = async () => {
     setBusy("save"); setMsg(null);
-    const r = await api("/api/settings/connectors", "POST", { id: c.id, value, url: c.urlEnv ? url : undefined });
+    const r = await api("/api/settings/connectors", "POST", { id: c.id, value: value || undefined, url: c.urlEnv ? url : undefined, personaId: c.idEnv ? pid : undefined });
     setBusy(""); if (!r.ok) return setMsg({ ok: false, detail: r.error });
     setValue(""); onChange(c.id, r.status); test();
   };
@@ -34,13 +35,14 @@ function Connector({ c, onChange }) {
       <Pill s={s} /><Icon name="down" size={15} />
     </button>
     {open && <div className="st-conn-body">
-      {s.configured && <p className="st-meta">Using {s.source === "env" ? <>environment variable <code>{c.env}</code></> : "saved token"} ending in <code>••••{s.last4}</code>{s.savedAt && <> · saved {when(s.savedAt)}</>}{s.test && <> · tested {when(s.test.at)}</>}</p>}
+      {s.configured && <p className="st-meta">{c.idEnv && s.personaId && <>Persona <code>{s.personaId}</code> · </>}Using {s.source === "env" ? <>environment variable <code>{c.env}</code></> : "saved token"} ending in <code>••••{s.last4}</code>{s.savedAt && <> · saved {when(s.savedAt)}</>}{s.test && <> · tested {when(s.test.at)}</>}</p>}
+      {c.idEnv && <label className="st-field"><span>{c.idLabel}</span><input value={pid} onChange={(e) => setPid(e.target.value)} placeholder={c.idPlaceholder} spellCheck={false} /></label>}
       {c.urlEnv && <label className="st-field"><span>{c.urlLabel}</span><input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://…" /></label>}
       <label className="st-field"><span>{c.secretLabel || "Personal access token"}</span>
         <div className="st-input"><Icon name="shield" size={14} /><input type="password" autoComplete="off" spellCheck={false} value={value} onChange={(e) => setValue(e.target.value)} placeholder={s.configured ? "Paste a new token to replace" : c.placeholder} /></div>
       </label>
       <div className="st-actions">
-        <button className="st-btn pri" disabled={!value || !!busy} onClick={save}>{busy === "save" ? "Saving…" : "Save & test"}</button>
+        <button className="st-btn pri" disabled={(!value && !(c.idEnv && s.configured && pid !== (s.personaId || ""))) || !!busy} onClick={save}>{busy === "save" ? "Saving…" : "Save & test"}</button>
         <button className="st-btn" disabled={!s.configured || !!busy} onClick={test}>{busy === "test" ? "Testing…" : "Test connection"}</button>
         {s.source === "saved" && <button className="st-btn ghost" disabled={!!busy} onClick={remove}>Remove</button>}
         <a className="st-link" href={c.help} target="_blank" rel="noreferrer">Get a token ↗</a>

@@ -223,3 +223,18 @@
 [data-theme=dark] .st-pill.on,[data-theme=dark] .st-result.good{background:#283d34;color:#92bda5;border-color:#344b3e}
 [data-theme=dark] .st-pill.bad,[data-theme=dark] .st-result.bad{background:#43362c;color:#e0b48e;border-color:#5a4535}
 @media(max-width:900px){.st-grid{grid-template-columns:1fr}.st-conn-body{padding-left:14px}.st-conn-title small{display:none}}
+
+/* Live Anam avatar */
+.olivia-stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 25%;transition:opacity .4s}
+.olivia-stage img{transition:opacity .4s}
+.olivia-stage .olivia-live{display:none}
+.olivia-toggle{position:absolute;top:8px;right:8px;z-index:3;display:flex;align-items:center;gap:7px;border:0;cursor:pointer;font-size:11px;font-weight:700;color:#fff;background:rgba(20,16,32,.55);backdrop-filter:blur(6px);padding:4px 10px 4px 5px;border-radius:99px}
+.olivia-switch{width:26px;height:15px;border-radius:99px;background:rgba(255,255,255,.35);position:relative;transition:.2s}
+.olivia-switch span{position:absolute;left:2px;top:2px;width:11px;height:11px;border-radius:50%;background:#fff;transition:.2s}
+.olivia-toggle.on .olivia-switch{background:#22c55e}.olivia-toggle.on .olivia-switch span{left:13px}
+.olivia-mic{position:absolute;bottom:8px;right:8px;z-index:3;border:0;border-radius:50%;width:30px;height:30px;background:rgba(20,16,32,.55);cursor:pointer;font-size:14px}
+.olivia-connecting{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;gap:8px;color:#fff;font-size:12px;font-weight:600;background:rgba(20,16,32,.35)}
+.olivia-connecting i{width:14px;height:14px;border:2px solid #fff;border-right-color:transparent;border-radius:50%;animation:olivia-spin .8s linear infinite}
+@keyframes olivia-spin{to{transform:rotate(360deg)}}
+.olivia-error{position:absolute;left:8px;right:8px;top:38px;z-index:3;font-size:10px;color:#fff;background:rgba(180,60,40,.85);padding:4px 8px;border-radius:6px}
+.olivia-stage.is-live{box-shadow:0 0 0 2px #22c55e,0 6px 18px rgba(60,40,90,.12)}
