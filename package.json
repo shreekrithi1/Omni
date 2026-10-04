@@ -9,10 +9,10 @@
     "db:setup": "node scripts/setup-db.mjs"
   },
   "dependencies": {
+    "@anam-ai/js-sdk": "^4.27.1",
+    "@neondatabase/serverless": "^1.0.0",
     "next": "14.2.15",
     "react": "18.3.1",
-    "react-dom": "18.3.1",
-    "@neondatabase/serverless": "^1.0.0",
-    "@anam-ai/js-sdk": "^4.27.1"
+    "react-dom": "18.3.1"
   }
 }
